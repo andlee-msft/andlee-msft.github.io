@@ -1,88 +1,91 @@
 <!DOCTYPE html>
-<style>
-    .loading {
-        background: #D24726;
-        position: fixed;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-    }
-
-    .loading .images {
-        position: absolute;
-        margin: auto;
-        width: 50%;
-        height: 50%;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-    }
-
-    .loading .images img {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-        max-width: 100%;
-        max-height: 100%;
-    }
-
-    .loading .images img.ring1 {
-        animation: ring1pulse 1.5s infinite;
-    }
-
-    .loading .images img.ring2 {
-        animation: ring2pulse 1.5s infinite;
-    }
-
-    @keyframes ring1pulse {
-        0% {
-            opacity: 0;
+<head>
+    <title>Forethought Test</title>
+    <style>
+        .loading {
+            background: #D24726;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
         }
 
-        25% {
-            opacity: 0;
+        .loading .images {
+            position: absolute;
+            margin: auto;
+            width: 50%;
+            height: 50%;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
         }
 
-        35% {
-            opacity: 1;
+        .loading .images img {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            max-width: 100%;
+            max-height: 100%;
         }
 
-        90% {
-            opacity: 1;
+        .loading .images img.ring1 {
+            animation: ring1pulse 1.5s infinite;
         }
 
-        100% {
-            opacity: 0;
-        }
-    }
-
-    @keyframes ring2pulse {
-        0% {
-            opacity: 0;
+        .loading .images img.ring2 {
+            animation: ring2pulse 1.5s infinite;
         }
 
-        50% {
-            opacity: 0;
+        @keyframes ring1pulse {
+            0% {
+                opacity: 0;
+            }
+
+            25% {
+                opacity: 0;
+            }
+
+            35% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
 
-        60% {
-            opacity: 1;
-        }
+        @keyframes ring2pulse {
+            0% {
+                opacity: 0;
+            }
 
-        90% {
-            opacity: 1;
-        }
+            50% {
+                opacity: 0;
+            }
 
-        100% {
-            opacity: 0;
+            60% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
-    }
-</style>
+    </style>
+</head>
 
 <div class="loading">
     <div class="images">
