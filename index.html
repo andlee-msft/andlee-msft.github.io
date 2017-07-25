@@ -2,16 +2,26 @@
 <head>
 <title>Forethought Test</title>
 <style>
-    .loading {
+    body {
+        background: #000;
+    }
+
+    #loading {
         background: #D24726;
         position: fixed;
         left: 0;
         right: 0;
         top: 0;
         bottom: 0;
+        opacity: 1;
+        transition: 130ms;
     }
 
-    .loading .images {
+    #loading.hidden {
+        opacity: 0;
+    }
+
+    #loading .images {
         position: absolute;
         margin: auto;
         width: 50%;
@@ -22,7 +32,7 @@
         bottom: 0;
     }
 
-    .loading .images img {
+    #loading .images img {
         position: absolute;
         left: 0;
         right: 0;
@@ -33,11 +43,11 @@
         max-height: 100%;
     }
 
-    .loading .images img.ring1 {
+    #loading .images img.ring1 {
         animation: ring1pulse 1.5s infinite;
     }
 
-    .loading .images img.ring2 {
+    #loading .images img.ring2 {
         animation: ring2pulse 1.5s infinite;
     }
 
@@ -88,7 +98,7 @@
 </head>
 
 <body>
-<div class="loading">
+<div id="loading">
     <div class="images">
         <img src="static/PPT1.png">
         <img class="ring1" src="static/PPT2.png">
@@ -100,6 +110,17 @@
 <script type="text/javascript" src="https://www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
 <script type="text/javascript" src="https://contentstorage.osi.office.net/boot/powerpoint.boot.js"></script>
 <script>
+
+function toggleLoading(loading) {
+    var loadingDiv = document.getElementById('loading');
+    if (loading) {
+        loadingDiv.classList.remove('hidden');
+    } else {
+        loadingDiv.classList.add('hidden');
+    }
+}
+
+window.setTimeout(toggleLoading, 5000);
 
       var api = null;
 
