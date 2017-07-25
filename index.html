@@ -114,12 +114,12 @@
 function toggleLoading(loading) {
     var loadingDiv = document.getElementById('loading');
     if (loading) {
-        loadingDiv.style.display = 'block';
+        loadingDiv.style.visibility = 'visible';
         loadingDiv.classList.remove('hidden');
     } else {
         loadingDiv.classList.add('hidden');
         window.setTimeout(function() {
-            loadingDiv.style.display = 'none';
+            loadingDiv.style.visibility = 'hidden';
         }, 500);
     }
 }
