@@ -114,9 +114,13 @@
 function toggleLoading(loading) {
     var loadingDiv = document.getElementById('loading');
     if (loading) {
+        loadingDiv.style.display = 'block';
         loadingDiv.classList.remove('hidden');
     } else {
         loadingDiv.classList.add('hidden');
+        window.setTimeout(function() {
+            loadingDiv.style.display = 'none';
+        }, 500);
     }
 }
 
