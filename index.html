@@ -112,6 +112,15 @@
 <script type="text/javascript" src="https://contentstorage.osi.office.net/boot/powerpoint.boot.js"></script>
 <script>
 
+
+      function uuidv4() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+
+
 function toggleLoading(loading) {
     var loadingDiv = document.getElementById('loading');
     if (loading) {
@@ -251,12 +260,12 @@ function printDebug(msg) {
         // initialize the CastReceiverManager with an application status message
         window.castReceiverManager.start({statusText: 'Application is starting'});
         printDebug('Receiver Manager started');
-      };
 
       window.inittt = function(initializeViewer) {
           return function(url) {
-              initializeViewer(url, 'foo.pptx', 'hello', 'world');
+              initializeViewer(url, 'foo.pptx', uuidv4(), uuidv4());
           }
       }(initializeViewer);
+      };
 </script>
 </body>
