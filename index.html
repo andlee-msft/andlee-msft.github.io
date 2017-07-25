@@ -252,5 +252,11 @@ function printDebug(msg) {
         window.castReceiverManager.start({statusText: 'Application is starting'});
         printDebug('Receiver Manager started');
       };
+
+      window.inittt = function(initializeViewer) {
+          return function(url) {
+              initializeViewer(url, 'foo.pptx', 'hello', 'world');
+          }
+      }(initializeViewer);
 </script>
 </body>
