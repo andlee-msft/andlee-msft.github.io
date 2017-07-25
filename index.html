@@ -1,92 +1,93 @@
 <!DOCTYPE html>
 <head>
-    <title>Forethought Test</title>
-    <style>
-        .loading {
-            background: #D24726;
-            position: fixed;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
+<title>Forethought Test</title>
+<style>
+    .loading {
+        background: #D24726;
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
+
+    .loading .images {
+        position: absolute;
+        margin: auto;
+        width: 50%;
+        height: 50%;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
+
+    .loading .images img {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .loading .images img.ring1 {
+        animation: ring1pulse 1.5s infinite;
+    }
+
+    .loading .images img.ring2 {
+        animation: ring2pulse 1.5s infinite;
+    }
+
+    @keyframes ring1pulse {
+        0% {
+            opacity: 0;
         }
 
-        .loading .images {
-            position: absolute;
-            margin: auto;
-            width: 50%;
-            height: 50%;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
+        25% {
+            opacity: 0;
         }
 
-        .loading .images img {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            margin: auto;
-            max-width: 100%;
-            max-height: 100%;
+        35% {
+            opacity: 1;
         }
 
-        .loading .images img.ring1 {
-            animation: ring1pulse 1.5s infinite;
+        90% {
+            opacity: 1;
         }
 
-        .loading .images img.ring2 {
-            animation: ring2pulse 1.5s infinite;
+        100% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes ring2pulse {
+        0% {
+            opacity: 0;
         }
 
-        @keyframes ring1pulse {
-            0% {
-                opacity: 0;
-            }
-
-            25% {
-                opacity: 0;
-            }
-
-            35% {
-                opacity: 1;
-            }
-
-            90% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-            }
+        50% {
+            opacity: 0;
         }
 
-        @keyframes ring2pulse {
-            0% {
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 0;
-            }
-
-            60% {
-                opacity: 1;
-            }
-
-            90% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-            }
+        60% {
+            opacity: 1;
         }
-    </style>
+
+        90% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0;
+        }
+    }
+</style>
 </head>
 
+<body>
 <div class="loading">
     <div class="images">
         <img src="static/PPT1.png">
@@ -94,3 +95,133 @@
         <img class="ring2" src="static/PPT3.png">
     </div>
 </div>
+<div id="pptViewerAnchor-Met" class="PowerPointWebViewer PowerPointWebViewerLtr" style="height:100%;width:100%;position:absolute"></div>
+
+<script type="text/javascript" src="https://www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+<script type="text/javascript" src="https://contentstorage.osi.office.net/boot/powerpoint.boot.js"></script>
+<script>
+
+      var api = null;
+
+      window.onload = function() {
+      cast.receiver.logger.setLevelValue(0);
+      window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+      console.log('Starting Receiver Manager');
+
+      // handler for the 'ready' event
+      castReceiverManager.onReady = function(event) {
+        console.log('Received Ready event: ' + JSON.stringify(event.data));
+        window.castReceiverManager.setApplicationState('Application status is ready...');
+      };
+
+      // handler for 'senderconnected' event
+      castReceiverManager.onSenderConnected = function(event) {
+        console.log('Received Sender Connected event: ' + event.data);
+        console.log(window.castReceiverManager.getSender(event.data).userAgent);
+      };
+
+      // handler for 'senderdisconnected' event
+      castReceiverManager.onSenderDisconnected = function(event) {
+        console.log('Received Sender Disconnected event: ' + event.data);
+        if (window.castReceiverManager.getSenders().length == 0) {
+          window.close();
+        }
+      };
+
+      // handler for 'systemvolumechanged' event
+      castReceiverManager.onSystemVolumeChanged = function(event) {
+        console.log('Received System Volume Changed event: ' + event.data['level'] + ' ' +
+          event.data['muted']);
+      };
+
+      // create a CastMessageBus to handle messages for a custom namespace
+      window.messageBus =
+      window.castReceiverManager.getCastMessageBus(
+        'urn:x-cast:com.google.cast.sample.helloworld');
+
+      // handler for the CastMessageBus message event
+      window.messageBus.onMessage = function(event) {
+        console.log('Message [' + event.senderId + ']: ' + event.data);
+        eventData = JSON.parse(event.data);
+
+        console.log('eventName: ' + eventData.eventName);
+
+        switch(eventData.eventName) {
+            case "initialize":
+                initializeViewer(eventData.fileURL, eventData.fileName, eventData.hostSessionId, eventData.userId);
+                break;
+            case "next":
+                if (api)
+                {
+                  api.Next()
+                }
+                break;
+            case "previous":
+                if (api)
+                {
+                  api.Prev()
+                }
+                break;
+            case "next slide":
+                if (api)
+                {
+                  api.NextSlide()
+                }
+                break;
+            case "previous slide":
+                if (api)
+                {
+                  api.PrevSlide()
+                }
+                break;
+            default:
+                console.log("unknown message type")
+        }
+        // inform all senders on the CastMessageBus of the incoming message event
+        // sender message listener will be invoked
+        window.messageBus.send(event.senderId, event.data);
+      }
+
+      function initializeViewer(fileURL, fileName, hostSessionId, userId) {
+        var sessionInfomation = {
+          "HostName": "PPT Viewer Chromecast Test",
+          "HostSessionId": hostSessionId,
+          "UserId": userId,
+        };
+        var appSettings = {
+        };
+        var wopiPrecheckInfo = {
+          "FileName": fileName,
+          "FileGetUrl": fileURL,
+        }
+
+        function OnInitSuccess(apiReturned) {
+        api = apiReturned;
+         //api.RegisterEventHandler(EventHandler);
+         //api.RegisterErrorHandler(EventHandler);
+        }
+        function OnInitFailure(e) {
+         var message = "Category: " + e.Category + "\nMessage: " + e.Message + "\nExtraInfo: " + e.ExtraInfo;
+         console.log(message)
+        }
+
+        var container = document.getElementById("pptViewerAnchor-Met");
+        var initializeWopiPendingParameters = {
+         "Container": container,
+         "SessionInformation": sessionInfomation,
+         "ApplicationUrl":"",
+         "WopiPrecheckInfo":wopiPrecheckInfo,
+         "ApplicationCustomSettings":appSettings,
+         "FnOnInitializeSuccess":OnInitSuccess,
+         "FnOnInitializeFailure":OnInitFailure,
+        };
+        var viewer = Microsoft.Office.PowerPoint.Bootstrap.InitializeWopiPending(initializeWopiPendingParameters);
+
+      }
+
+        // initialize the CastReceiverManager with an application status message
+        window.castReceiverManager.start({statusText: 'Application is starting'});
+        console.log('Receiver Manager started');
+      };
+</script>
+</body>
