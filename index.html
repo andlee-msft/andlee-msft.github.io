@@ -106,6 +106,7 @@
     </div>
 </div>
 <div id="pptViewerAnchor-Met" class="PowerPointWebViewer PowerPointWebViewerLtr" style="height:100%;width:100%;position:absolute"></div>
+<div id="debug"></div>
 
 <script type="text/javascript" src="https://www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
 <script type="text/javascript" src="https://contentstorage.osi.office.net/boot/powerpoint.boot.js"></script>
@@ -124,30 +125,33 @@ function toggleLoading(loading) {
     }
 }
 
-window.setTimeout(toggleLoading, 5000);
+function printDebug(msg) {
+    var html = document.getElementById('loading').innerHTML;
+    document.getElementById('loading').innerHTML = msg + '<br><br>' + html;
+}
 
       var api = null;
 
       window.onload = function() {
       cast.receiver.logger.setLevelValue(0);
       window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
-      console.log('Starting Receiver Manager');
+      printDebug('Starting Receiver Manager');
 
       // handler for the 'ready' event
       castReceiverManager.onReady = function(event) {
-        console.log('Received Ready event: ' + JSON.stringify(event.data));
+        printDebug('Received Ready event: ' + JSON.stringify(event.data));
         window.castReceiverManager.setApplicationState('Application status is ready...');
       };
 
       // handler for 'senderconnected' event
       castReceiverManager.onSenderConnected = function(event) {
-        console.log('Received Sender Connected event: ' + event.data);
-        console.log(window.castReceiverManager.getSender(event.data).userAgent);
+        printDebug('Received Sender Connected event: ' + event.data);
+        printDebug(window.castReceiverManager.getSender(event.data).userAgent);
       };
 
       // handler for 'senderdisconnected' event
       castReceiverManager.onSenderDisconnected = function(event) {
-        console.log('Received Sender Disconnected event: ' + event.data);
+        printDebug('Received Sender Disconnected event: ' + event.data);
         if (window.castReceiverManager.getSenders().length == 0) {
           window.close();
         }
@@ -155,7 +159,7 @@ window.setTimeout(toggleLoading, 5000);
 
       // handler for 'systemvolumechanged' event
       castReceiverManager.onSystemVolumeChanged = function(event) {
-        console.log('Received System Volume Changed event: ' + event.data['level'] + ' ' +
+        printDebug('Received System Volume Changed event: ' + event.data['level'] + ' ' +
           event.data['muted']);
       };
 
@@ -166,10 +170,10 @@ window.setTimeout(toggleLoading, 5000);
 
       // handler for the CastMessageBus message event
       window.messageBus.onMessage = function(event) {
-        console.log('Message [' + event.senderId + ']: ' + event.data);
+        printDebug('Message [' + event.senderId + ']: ' + event.data);
         eventData = JSON.parse(event.data);
 
-        console.log('eventName: ' + eventData.eventName);
+        printDebug('eventName: ' + eventData.eventName);
 
         switch(eventData.eventName) {
             case "initialize":
@@ -200,7 +204,7 @@ window.setTimeout(toggleLoading, 5000);
                 }
                 break;
             default:
-                console.log("unknown message type")
+                printDebug("unknown message type")
         }
         // inform all senders on the CastMessageBus of the incoming message event
         // sender message listener will be invoked
@@ -227,7 +231,7 @@ window.setTimeout(toggleLoading, 5000);
         }
         function OnInitFailure(e) {
          var message = "Category: " + e.Category + "\nMessage: " + e.Message + "\nExtraInfo: " + e.ExtraInfo;
-         console.log(message)
+         printDebug(message)
         }
 
         var container = document.getElementById("pptViewerAnchor-Met");
@@ -246,7 +250,7 @@ window.setTimeout(toggleLoading, 5000);
 
         // initialize the CastReceiverManager with an application status message
         window.castReceiverManager.start({statusText: 'Application is starting'});
-        console.log('Receiver Manager started');
+        printDebug('Receiver Manager started');
       };
 </script>
 </body>
