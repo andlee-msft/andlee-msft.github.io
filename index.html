@@ -278,7 +278,7 @@ printDebug('Receiver Manager started');
 
 window.inittt = function(initializeHardCode) {
     return function(name) {
-        initializeHardCode(name);
+        initializeHardCode(name, 0);
     }
 }(initializeHardCode);
 };
