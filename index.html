@@ -246,6 +246,9 @@ window.messageBus.onMessage = function(event) {
 
 // The real one
 function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) {
+    toggleLoading(true);
+    api = null;
+
     var sessionInfomation = {
         "HostName": "PPT Viewer Chromecast Test",
         "HostSessionId": hostSessionId,
@@ -270,6 +273,7 @@ function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) 
     }
 
     var container = document.getElementById("pptViewerAnchor-Met");
+    container.innerHTML = '';
     var initializeWopiPendingParameters = {
         "Container": container,
         "SessionInformation": sessionInfomation,
