@@ -44,11 +44,11 @@
     }
 
     #loading .images img.ring1 {
-        animation: ring1pulse 1.5s infinite;
+        animation: ring1pulse 1s infinite;
     }
 
     #loading .images img.ring2 {
-        animation: ring2pulse 1.5s infinite;
+        animation: ring2pulse 1s infinite;
     }
 
     @keyframes ring1pulse {
@@ -182,33 +182,39 @@ window.messageBus.onMessage = function(event) {
 
     switch(eventData.eventName) {
         case "initialize":
-            initializeViewer(eventData.fileURL, eventData.fileName, eventData.hostSessionId, eventData.userId);
+            initializeViewer(eventData.fileURL, eventData.fileName, eventData.slideIndex, eventData.hostSessionId, eventData.userId);
             break;
         case "initializeHardCode":
-            initializeHardCode(eventData.fileName);
+            initializeHardCode(eventData.fileName, eventData.slideIndex);
             break;
         case "next":
             if (api)
             {
-                api.Next()
+                api.Next();
             }
             break;
-        case "previous":
+        case "prev":
             if (api)
             {
-                api.Prev()
+                api.Prev();
             }
             break;
-        case "next slide":
+        case "nextSlide":
             if (api)
             {
-                api.NextSlide()
+                api.NextSlide();
             }
             break;
-        case "previous slide":
+        case "prevSlide":
             if (api)
             {
-                api.PrevSlide()
+                api.PrevSlide();
+            }
+            break;
+        case "goToSlide":
+            if (api)
+            {
+                api.GoToSlide(eventData.slideIndex, []);
             }
             break;
         default:
@@ -220,7 +226,7 @@ window.messageBus.onMessage = function(event) {
 }
 
 // The real one
-function initializeViewer(fileURL, fileName, hostSessionId, userId) {
+function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) {
     var sessionInfomation = {
         "HostName": "PPT Viewer Chromecast Test",
         "HostSessionId": hostSessionId,
@@ -235,6 +241,7 @@ function initializeViewer(fileURL, fileName, hostSessionId, userId) {
 
     function OnInitSuccess(apiReturned) {
         api = apiReturned;
+        api.GoToSlide(slideIndex, []);
         toggleLoading(false);
     }
     function OnInitFailure(e) {
