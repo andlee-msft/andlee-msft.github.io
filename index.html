@@ -222,6 +222,9 @@ window.messageBus.onMessage = function(event) {
                 api.GoToSlide(eventData.slideIndex, []);
             }
             break;
+        case "end":
+            toggleLoading(true);
+            break;
         default:
             printDebug("unknown message type")
     }
