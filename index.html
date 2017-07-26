@@ -98,6 +98,7 @@
 </head>
 
 <body>
+<div id="pptViewerAnchor-Met" class="PowerPointWebViewer PowerPointWebViewerLtr" style="height:100%;width:100%;position:absolute"></div>
 <div id="loading">
     <div class="images">
         <img src="static/PPT1.png">
@@ -105,21 +106,18 @@
         <img class="ring2" src="static/PPT3.png">
     </div>
 </div>
-<div id="pptViewerAnchor-Met" class="PowerPointWebViewer PowerPointWebViewerLtr" style="height:100%;width:100%;position:absolute"></div>
 <div id="debug"></div>
 
 <script type="text/javascript" src="https://www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
 <script type="text/javascript" src="https://contentstorage.osi.office.net/boot/powerpoint.boot.js"></script>
 <script>
 
-
-      function uuidv4() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        });
-      }
-
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
 function toggleLoading(loading) {
     var loadingDiv = document.getElementById('loading');
@@ -139,133 +137,143 @@ function printDebug(msg) {
     document.getElementById('loading').innerHTML = msg + '<br><br>' + html;
 }
 
-      var api = null;
+var api = null;
 
-      window.onload = function() {
-      cast.receiver.logger.setLevelValue(0);
-      window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
-      printDebug('Starting Receiver Manager');
+window.onload = function() {
+    cast.receiver.logger.setLevelValue(0);
+    window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+    printDebug('Starting Receiver Manager');
 
-      // handler for the 'ready' event
-      castReceiverManager.onReady = function(event) {
-        printDebug('Received Ready event: ' + JSON.stringify(event.data));
-        window.castReceiverManager.setApplicationState('Application status is ready...');
-      };
+    // handler for the 'ready' event
+    castReceiverManager.onReady = function(event) {
+    printDebug('Received Ready event: ' + JSON.stringify(event.data));
+    window.castReceiverManager.setApplicationState('Application status is ready...');
+};
 
-      // handler for 'senderconnected' event
-      castReceiverManager.onSenderConnected = function(event) {
-        printDebug('Received Sender Connected event: ' + event.data);
-        printDebug(window.castReceiverManager.getSender(event.data).userAgent);
-      };
+// handler for 'senderconnected' event
+castReceiverManager.onSenderConnected = function(event) {
+    printDebug('Received Sender Connected event: ' + event.data);
+    printDebug(window.castReceiverManager.getSender(event.data).userAgent);
+};
 
-      // handler for 'senderdisconnected' event
-      castReceiverManager.onSenderDisconnected = function(event) {
-        printDebug('Received Sender Disconnected event: ' + event.data);
-        if (window.castReceiverManager.getSenders().length == 0) {
-          window.close();
-        }
-      };
+// handler for 'senderdisconnected' event
+castReceiverManager.onSenderDisconnected = function(event) {
+    printDebug('Received Sender Disconnected event: ' + event.data);
+    if (window.castReceiverManager.getSenders().length == 0) {
+        window.close();
+    }
+};
 
-      // handler for 'systemvolumechanged' event
-      castReceiverManager.onSystemVolumeChanged = function(event) {
-        printDebug('Received System Volume Changed event: ' + event.data['level'] + ' ' +
-          event.data['muted']);
-      };
+// handler for 'systemvolumechanged' event
+castReceiverManager.onSystemVolumeChanged = function(event) {
+    printDebug('Received System Volume Changed event: ' + event.data['level'] + ' ' +
+        event.data['muted']);
+};
 
-      // create a CastMessageBus to handle messages for a custom namespace
-      window.messageBus =
-      window.castReceiverManager.getCastMessageBus(
-        'urn:x-cast:com.microsoft.forethought.test');
+// create a CastMessageBus to handle messages for a custom namespace
+window.messageBus = window.castReceiverManager.getCastMessageBus('urn:x-cast:com.microsoft.forethought.test');
 
-      // handler for the CastMessageBus message event
-      window.messageBus.onMessage = function(event) {
-        printDebug('Message [' + event.senderId + ']: ' + event.data);
-        eventData = JSON.parse(event.data);
+// handler for the CastMessageBus message event
+window.messageBus.onMessage = function(event) {
+    printDebug('Message [' + event.senderId + ']: ' + event.data);
+    eventData = JSON.parse(event.data);
 
-        printDebug('eventName: ' + eventData.eventName);
+    printDebug('eventName: ' + eventData.eventName);
 
-        switch(eventData.eventName) {
-            case "initialize":
-                initializeViewer(eventData.fileURL, eventData.fileName, eventData.hostSessionId, eventData.userId);
-                break;
-            case "next":
-                if (api)
-                {
-                  api.Next()
-                }
-                break;
-            case "previous":
-                if (api)
-                {
-                  api.Prev()
-                }
-                break;
-            case "next slide":
-                if (api)
-                {
-                  api.NextSlide()
-                }
-                break;
-            case "previous slide":
-                if (api)
-                {
-                  api.PrevSlide()
-                }
-                break;
-            default:
-                printDebug("unknown message type")
-        }
-        // inform all senders on the CastMessageBus of the incoming message event
-        // sender message listener will be invoked
-        window.messageBus.send(event.senderId, event.data);
-      }
+    switch(eventData.eventName) {
+        case "initialize":
+            initializeViewer(eventData.fileURL, eventData.fileName, eventData.hostSessionId, eventData.userId);
+            break;
+        case "initializeHardCode":
+            initializeHardCode(eventData.fileName);
+            break;
+        case "next":
+            if (api)
+            {
+                api.Next()
+            }
+            break;
+        case "previous":
+            if (api)
+            {
+                api.Prev()
+            }
+            break;
+        case "next slide":
+            if (api)
+            {
+                api.NextSlide()
+            }
+            break;
+        case "previous slide":
+            if (api)
+            {
+                api.PrevSlide()
+            }
+            break;
+        default:
+            printDebug("unknown message type")
+    }
+    // inform all senders on the CastMessageBus of the incoming message event
+    // sender message listener will be invoked
+    window.messageBus.send(event.senderId, event.data);
+}
 
-      function initializeViewer(fileURL, fileName, hostSessionId, userId) {
-        var sessionInfomation = {
-          "HostName": "PPT Viewer Chromecast Test",
-          "HostSessionId": hostSessionId,
-          "UserId": userId,
-        };
-        var appSettings = {
-        };
-        var wopiPrecheckInfo = {
-          "FileName": fileName,
-          "FileGetUrl": fileURL,
-        }
+// The real one
+function initializeViewer(fileURL, fileName, hostSessionId, userId) {
+    var sessionInfomation = {
+        "HostName": "PPT Viewer Chromecast Test",
+        "HostSessionId": hostSessionId,
+        "UserId": userId,
+    };
+    var appSettings = {
+    };
+    var wopiPrecheckInfo = {
+        "FileName": fileName,
+        "FileGetUrl": fileURL,
+    }
 
-        function OnInitSuccess(apiReturned) {
+    function OnInitSuccess(apiReturned) {
         api = apiReturned;
-         //api.RegisterEventHandler(EventHandler);
-         //api.RegisterErrorHandler(EventHandler);
-        }
-        function OnInitFailure(e) {
-         var message = "Category: " + e.Category + "\nMessage: " + e.Message + "\nExtraInfo: " + e.ExtraInfo;
-         printDebug(message)
-        }
+        toggleLoading(false);
+    }
+    function OnInitFailure(e) {
+        var message = "Category: " + e.Category + "\nMessage: " + e.Message + "\nExtraInfo: " + e.ExtraInfo;
+        printDebug(message)
+    }
 
-        var container = document.getElementById("pptViewerAnchor-Met");
-        var initializeWopiPendingParameters = {
-         "Container": container,
-         "SessionInformation": sessionInfomation,
-         "ApplicationUrl":"",
-         "WopiPrecheckInfo":wopiPrecheckInfo,
-         "ApplicationCustomSettings":appSettings,
-         "FnOnInitializeSuccess":OnInitSuccess,
-         "FnOnInitializeFailure":OnInitFailure,
-        };
-        var viewer = Microsoft.Office.PowerPoint.Bootstrap.InitializeWopiPending(initializeWopiPendingParameters);
+    var container = document.getElementById("pptViewerAnchor-Met");
+    var initializeWopiPendingParameters = {
+        "Container": container,
+        "SessionInformation": sessionInfomation,
+        "ApplicationUrl":"",
+        "WopiPrecheckInfo":wopiPrecheckInfo,
+        "ApplicationCustomSettings":appSettings,
+        "FnOnInitializeSuccess":OnInitSuccess,
+        "FnOnInitializeFailure":OnInitFailure,
+    };
+    var viewer = Microsoft.Office.PowerPoint.Bootstrap.InitializeWopiPending(initializeWopiPendingParameters);
+}
 
-      }
+// The fake one
+function initializeHardCode(fileName) {
+    fileURLs = {
+        'ApexSetup.pptx': 'https://osicewuspink000.blob.core.windows.net/rawfile-8c91dc70-3e25-44ee-a016-a30a0fdf227f/8c91dc70-3e25-44ee-a016-a30a0fdf227f.pptx',
+        'cordic.pptx': 'https://osicewuspink000.blob.core.windows.net/rawfile-837d4e97-fb11-4b2c-9d66-41cd2288475b/837d4e97-fb11-4b2c-9d66-41cd2288475b.pptx'
+    };
 
-        // initialize the CastReceiverManager with an application status message
-        window.castReceiverManager.start({statusText: 'Application is starting'});
-        printDebug('Receiver Manager started');
+    initializeViewer(fileURLs[fileName], fileName, uuidv4(), uuidv4());
+}
 
-      window.inittt = function(initializeViewer) {
-          return function(url) {
-              initializeViewer(url, 'foo.pptx', uuidv4(), uuidv4());
-          }
-      }(initializeViewer);
-      };
+// initialize the CastReceiverManager with an application status message
+window.castReceiverManager.start({statusText: 'Application is starting'});
+printDebug('Receiver Manager started');
+
+window.inittt = function(initializeHardCode) {
+    return function(name) {
+        initializeHardCode(name);
+    }
+}(initializeHardCode);
+};
 </script>
 </body>
