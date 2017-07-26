@@ -137,6 +137,11 @@ function toggleLoading(loading) {
     }
 }
 
+function toggleMute(toMute) {
+    var presentationDiv = document.getElementById('pptViewerAnchor-Met');
+    presentationDiv.style.display = toMute ? 'none' : 'block';
+}
+
 function printDebug(msg) {
     var html = document.getElementById('debug').innerHTML;
     document.getElementById('debug').innerHTML = msg + '<br><br>' + html;
@@ -221,6 +226,12 @@ window.messageBus.onMessage = function(event) {
             {
                 api.GoToSlide(eventData.slideIndex, []);
             }
+            break;
+        case "muteScreen":
+            toggleMute(true);
+            break;
+        case "unmute":
+            toggleMute(false);
             break;
         case "end":
             toggleLoading(true);
