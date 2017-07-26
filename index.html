@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
 <title>Forethought Test</title>
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans" />
 <style>
     body {
         background: #000;
@@ -11,7 +12,15 @@
         position: fixed;
     }
 
-    #loading {
+    #pptViewerAnchor-Met {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
+
+    #splash {
         background: #D24726;
         position: fixed;
         left: 0;
@@ -22,22 +31,34 @@
         transition: 0.5s;
     }
 
-    #loading.hidden {
+    #splash.hidden {
         opacity: 0;
     }
 
-    #loading .images {
+    #title {
+        color: #fff;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 10vh;
+        font-size: 10vh;
+        font-family: "Open Sans";
+        text-align: center;
+    }
+
+    #splash .images {
         position: absolute;
         margin: auto;
-        width: 50%;
-        height: 50%;
+        width: 40%;
+        height: 40%;
         left: 0;
         right: 0;
         top: 0;
         bottom: 0;
+        opacity: 1;
     }
 
-    #loading .images img {
+    #splash .images img {
         position: absolute;
         left: 0;
         right: 0;
@@ -48,11 +69,11 @@
         max-height: 100%;
     }
 
-    #loading .images img.ring1 {
+    #splash.loading .images img.ring1 {
         animation: ring1pulse 1s infinite;
     }
 
-    #loading .images img.ring2 {
+    #splash.loading .images img.ring2 {
         animation: ring2pulse 1s infinite;
     }
 
@@ -103,8 +124,9 @@
 </head>
 
 <body>
-<div id="pptViewerAnchor-Met" class="PowerPointWebViewer PowerPointWebViewerLtr" style="height:100%;width:100%;position:absolute"></div>
-<div id="loading">
+<div id="pptViewerAnchor-Met" class="PowerPointWebViewer PowerPointWebViewerLtr"></div>
+<div id="splash">
+    <div id="title"></div>
     <div class="images">
         <img src="static/PPT1.png">
         <img class="ring1" src="static/PPT2.png">
@@ -124,15 +146,24 @@ function uuidv4() {
     });
 }
 
-function toggleLoading(loading) {
-    var loadingDiv = document.getElementById('loading');
-    if (loading) {
-        loadingDiv.style.visibility = 'visible';
-        loadingDiv.classList.remove('hidden');
+function toggleSplash(isVisible, isLoading, fileName) {
+    var splashDiv = document.getElementById('splash');
+    if (isVisible) {
+        if (isLoading) {
+            splashDiv.classList.add('loading');
+        } else {
+            splashDiv.classList.remove('loading');
+        }
+
+        var titleDiv = document.getElementById('title');
+        titleDiv.innerText = isLoading ? fileName : "Microsoft PowerPoint"
+
+        splashDiv.style.visibility = 'visible';
+        splashDiv.classList.remove('hidden');
     } else {
-        loadingDiv.classList.add('hidden');
+        splashDiv.classList.add('hidden');
         window.setTimeout(function() {
-            loadingDiv.style.visibility = 'hidden';
+            splashDiv.style.visibility = 'hidden';
         }, 500);
     }
 }
@@ -234,7 +265,7 @@ window.messageBus.onMessage = function(event) {
             toggleMute(false);
             break;
         case "end":
-            toggleLoading(true);
+            toggleSplash(true, false, null);
             break;
         default:
             printDebug("unknown message type")
@@ -246,7 +277,7 @@ window.messageBus.onMessage = function(event) {
 
 // The real one
 function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) {
-    toggleLoading(true);
+    toggleSplash(true, true, fileName);
     api = null;
 
     var sessionInfomation = {
@@ -265,7 +296,7 @@ function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) 
     function OnInitSuccess(apiReturned) {
         api = apiReturned;
         // api.GoToSlide(slideIndex, []);
-        toggleLoading(false);
+        toggleSplash(false, false, null);
     }
     function OnInitFailure(e) {
         var message = "Category: " + e.Category + "\nMessage: " + e.Message + "\nExtraInfo: " + e.ExtraInfo;
@@ -306,6 +337,8 @@ window.inittt = function(initializeHardCode) {
         initializeHardCode(name, 0);
     }
 }(initializeHardCode);
+
+toggleSplash(true, false, null);
 };
 </script>
 </body>
