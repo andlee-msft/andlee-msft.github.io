@@ -238,6 +238,7 @@ function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) 
         "UserId": userId,
     };
     var appSettings = {
+        "StartingSlideIndex": slideIndex
     };
     var wopiPrecheckInfo = {
         "FileName": fileName,
@@ -246,7 +247,7 @@ function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) 
 
     function OnInitSuccess(apiReturned) {
         api = apiReturned;
-        api.GoToSlide(slideIndex, []);
+        // api.GoToSlide(slideIndex, []);
         toggleLoading(false);
     }
     function OnInitFailure(e) {
