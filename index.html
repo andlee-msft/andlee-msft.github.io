@@ -246,9 +246,8 @@ function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) 
 
     function OnInitSuccess(apiReturned) {
         api = apiReturned;
-        toggleLoading(false);
-        printDebug(slideIndex);
         api.GoToSlide(slideIndex, []);
+        toggleLoading(false);
     }
     function OnInitFailure(e) {
         var message = "Category: " + e.Category + "\nMessage: " + e.Message + "\nExtraInfo: " + e.ExtraInfo;
