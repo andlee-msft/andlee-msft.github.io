@@ -6,9 +6,9 @@
         background: #000;
     }
 
-    #debug {
+    /* #debug {
         display: none;
-    }
+    } */
 
     #loading {
         background: #D24726;
@@ -245,8 +245,9 @@ function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) 
 
     function OnInitSuccess(apiReturned) {
         api = apiReturned;
-        api.GoToSlide(slideIndex, []);
         toggleLoading(false);
+        printDebug(slideIndex);
+        api.GoToSlide(slideIndex, []);
     }
     function OnInitFailure(e) {
         var message = "Category: " + e.Category + "\nMessage: " + e.Message + "\nExtraInfo: " + e.ExtraInfo;
