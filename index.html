@@ -6,6 +6,10 @@
         background: #000;
     }
 
+    #debug {
+        display: none;
+    }
+
     #loading {
         background: #D24726;
         position: fixed;
@@ -263,13 +267,13 @@ function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) 
 }
 
 // The fake one
-function initializeHardCode(fileName) {
+function initializeHardCode(fileName, slideIndex) {
     fileURLs = {
         'ApexSetup.pptx': 'https://osicewuspink000.blob.core.windows.net/rawfile-8c91dc70-3e25-44ee-a016-a30a0fdf227f/8c91dc70-3e25-44ee-a016-a30a0fdf227f.pptx',
         'cordic.pptx': 'https://osicewuspink000.blob.core.windows.net/rawfile-837d4e97-fb11-4b2c-9d66-41cd2288475b/837d4e97-fb11-4b2c-9d66-41cd2288475b.pptx'
     };
 
-    initializeViewer(fileURLs[fileName], fileName, uuidv4(), uuidv4());
+    initializeViewer(fileURLs[fileName], fileName, slideIndex, uuidv4(), uuidv4());
 }
 
 // initialize the CastReceiverManager with an application status message
