@@ -142,6 +142,7 @@
 
 var api = null;
 var currentFileName = undefined;
+var currentSenderId = undefined;
 
 function uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -152,6 +153,7 @@ function uuidv4() {
 
 function clearPreviewer() {
     currentFileName = undefined;
+    currentSenderId = undefined;
     var container = document.getElementById("pptViewerAnchor-Met");
     container.innerHTML = '';
 }
@@ -233,50 +235,58 @@ window.onload = function() {
 
         switch(eventData.eventName) {
             case "initialize":
-                initializeViewer(eventData.fileURL, eventData.fileName, eventData.slideIndex, eventData.hostSessionId, eventData.userId);
+                initializeViewer(eventData.fileURL, eventData.fileName, eventData.slideIndex, eventData.hostSessionId, eventData.userId, event.senderId);
                 break;
             case "initializeHardCode":
-                initializeHardCode(eventData.fileName, eventData.slideIndex);
+                initializeHardCode(eventData.fileName, eventData.slideIndex, event.senderId);
                 break;
             case "next":
-                if (api)
+                if (api && currentSenderId == event.senderId)
                 {
                     api.Next();
                 }
                 break;
             case "prev":
-                if (api)
+                if (api && currentSenderId == event.senderId)
                 {
                     api.Prev();
                 }
                 break;
             case "nextSlide":
-                if (api)
+                if (api && currentSenderId == event.senderId)
                 {
                     api.NextSlide();
                 }
                 break;
             case "prevSlide":
-                if (api)
+                if (api && currentSenderId == event.senderId)
                 {
                     api.PrevSlide();
                 }
                 break;
             case "goToSlide":
-                if (api)
+                if (api && currentSenderId == event.senderId)
                 {
                     api.GoToSlide(eventData.slideIndex, []);
                 }
                 break;
             case "mute":
-                toggleMute(true);
+                if (api && currentSenderId == event.senderId)
+                {
+                    toggleMute(true);
+                }
                 break;
             case "unmute":
-                toggleMute(false);
+                if (api && currentSenderId == event.senderId)
+                {
+                    toggleMute(false);
+                }
                 break;
             case "end":
-                toggleSplash(true, false, null);
-                window.setTimeout(clearPreviewer, 500);
+                if (currentSenderId == event.senderId) {
+                    toggleSplash(true, false, null);
+                    window.setTimeout(clearPreviewer, 500);
+                }
                 break;
             default:
                 printDebug("unknown message type")
@@ -287,7 +297,7 @@ window.onload = function() {
     }
 
     // The real one
-    function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId) {
+    function initializeViewer(fileURL, fileName, slideIndex, hostSessionId, userId, senderId) {
         if (fileName == currentFileName) {
             api.GoToSlide(slideIndex, []);
             toggleSplash(false, false, null);
@@ -315,6 +325,7 @@ window.onload = function() {
             // api.GoToSlide(slideIndex, []);
             toggleSplash(false, false, null);
             currentFileName = fileName;
+            currentSenderId = senderId;
         }
         function OnInitFailure(e) {
             var message = "Category: " + e.Category + "\nMessage: " + e.Message + "\nExtraInfo: " + e.ExtraInfo;
@@ -335,14 +346,14 @@ window.onload = function() {
     }
 
     // The fake one
-    function initializeHardCode(fileName, slideIndex) {
+    function initializeHardCode(fileName, slideIndex, senderId) {
         fileURLs = {
             'ApexSetup.pptx': 'https://osicewuspink000.blob.core.windows.net/rawfile-8c91dc70-3e25-44ee-a016-a30a0fdf227f/8c91dc70-3e25-44ee-a016-a30a0fdf227f.pptx',
             'cordic.pptx': 'https://osicewuspink000.blob.core.windows.net/rawfile-837d4e97-fb11-4b2c-9d66-41cd2288475b/837d4e97-fb11-4b2c-9d66-41cd2288475b.pptx',
             'PowerCast.pptx': 'https://osicewuspink000.blob.core.windows.net/rawfile-050890d0-390f-4daa-a71f-c8a1184f4814/050890d0-390f-4daa-a71f-c8a1184f4814.pptx'
         };
 
-        initializeViewer(fileURLs[fileName], fileName, slideIndex, uuidv4(), uuidv4());
+        initializeViewer(fileURLs[fileName], fileName, slideIndex, uuidv4(), uuidv4(), senderId);
     }
 
     // initialize the CastReceiverManager with an application status message
